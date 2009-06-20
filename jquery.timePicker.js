@@ -26,8 +26,8 @@
   };
   
   $.timePicker = function (elm, settings) {
-    var elm = $(elm)[0];  
-    return elm.timePicker || (elm.timePicker = new jQuery._timePicker(elm, settings));
+    var e = $(elm)[0];
+    return e.timePicker || (e.timePicker = new jQuery._timePicker(e, settings));
   };
   
   $._timePicker = function(elm, settings) {
@@ -104,25 +104,39 @@
     })
     
     // Key support
-    .keypress(function(e) {
+    .keydown(function(e) {
+      var $selected;
+      var top = $tpDiv[0].scrollTop;
       switch (e.keyCode) {
         case 38: // Up arrow.
-        case 63232: // Safari up arrow.
-          var $selected = $("li.selected", $tpList);
+          $selected = $("li.selected", $tpList);
           var prev = $selected.prev().addClass("selected")[0];
           if (prev) {
             $selected.removeClass("selected");
-            $tpDiv[0].scrollTop = prev.offsetTop;
+            if (prev.offsetTop < top) {
+              $tpDiv[0].scrollTop = top - prev.offsetHeight;
+            }
+          }
+          else {
+            $selected.removeClass("selected");
+            prev = $("li:last", $tpList).addClass("selected")[0];
+            $tpDiv[0].scrollTop = prev.offsetTop - prev.offsetHeight;
           }
           return false;
           break;
         case 40: // Down arrow.
-        case 63233: // Safari down arrow.
-          var $selected = $("li.selected", $tpList);
-          var next = $selected.length ? $selected.next().addClass("selected")[0] : $("li:first").addClass("selected")[0];
+          $selected = $("li.selected", $tpList);
+          var next = $selected.length ? $selected.next().addClass("selected")[0] : $("li:first", $tpList).addClass("selected")[0];
           if (next) {
             $selected.removeClass("selected");
-            $tpDiv[0].scrollTop = next.offsetTop;
+            if (next.offsetTop + next.offsetHeight > top + $tpDiv[0].offsetHeight) {
+              $tpDiv[0].scrollTop = top + next.offsetHeight;
+            }
+          }
+          else {
+            $selected.removeClass("selected");
+            next = $("li:first", $tpList).addClass("selected")[0];
+            $tpDiv[0].scrollTop = 0;
           }
           return false;
           break;
@@ -130,8 +144,8 @@
           if (!$tpDiv.is(":hidden")) {
             var sel = $("li.selected", $tpList)[0];
             setTimeVal(elm, sel, $tpDiv, settings);
-            return false;
           }
+          return false;
           break;
       }
     });
