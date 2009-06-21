@@ -147,6 +147,10 @@
           }
           return false;
           break;
+        case 27: // Esc
+          $tpDiv.hide();
+          return false;
+          break;
       }
     });
     
