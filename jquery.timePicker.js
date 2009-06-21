@@ -84,8 +84,7 @@
       var min = (time.getHours() * 60 + time.getMinutes()) - startMin;
       var steps = Math.round(min / settings.step);
       var roundTime = normaliseTime(new Date(2001, 0, 0, 0, (steps * settings.step + (startMin)), 0));
-      roundTime = (startTime < roundTime && roundTime < endTime) ? roundTime : startTime;
-      
+      roundTime = (startTime < roundTime && roundTime <= endTime) ? roundTime : startTime;
       var $matchedTime = $("li:contains(" + formatTime(roundTime, settings) + ")", $tpDiv);
       
       if ($matchedTime.length) {
