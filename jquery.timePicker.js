@@ -209,6 +209,16 @@
       var array = input.split(settings.separator);
       var hours = parseFloat(array[0]);
       var minutes = parseFloat(array[1]);
+
+      // Convert AM/PM hour to 24-hour format.
+      if (!settings.show24Hours) {
+        if (hours === 12 && input.substr('AM') !== -1) {
+          hours = 0;
+        }
+        else if (hours !== 12 && input.indexOf('PM') !== -1) {
+          hours += 12;
+        }
+      }
       var time = new Date(0, 0, 0, hours, minutes, 0);
       return normaliseTime(time);
     }
