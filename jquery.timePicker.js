@@ -32,6 +32,7 @@
   $._timePicker = function(elm, settings) {
 
     var tpOver = false;
+    var keyDown = false;
     var startTime = normaliseTime(settings.startTime);
     var endTime = normaliseTime(settings.endTime);
 
@@ -52,14 +53,23 @@
       $tpList.append("<li>" + times[i] + "</li>");
     }
     $tpDiv.append($tpList);
-    // Store element offset.
-    var elmOffset = $(elm).offset();
     // Append the timPicker to the body and position it.
+    var elmOffset = $(elm).offset();
     $tpDiv.appendTo('body').css({'top':elmOffset.top, 'left':elmOffset.left}).hide();
-
-    $("li", $tpList).unbind().mouseover(function() {
-      $("li.selected", $tpDiv).removeClass("selected");  // TODO: only needs to run once.
-      $(this).addClass("selected");
+    
+    // Store the mouse state, used by the blur event. Use mouseover instead of
+    // mousedown since Opera fires blur before mousedown.
+    $tpDiv.mouseover(function() {
+      tpOver = true;
+    }).mouseout(function() {
+      tpOver = false;
+    });
+    
+    $("li", $tpList).mouseover(function() {
+      if (!keyDown) {
+        $("li.selected", $tpDiv).removeClass("selected");
+        $(this).addClass("selected");
+      }
     }).mousedown(function() {
        tpOver = true;
     }).click(function() {
@@ -67,18 +77,15 @@
       tpOver = false;
     });
 
-    // Store ananymous function in variable since it's used twice.
     var showPicker = function() {
+      if ($tpDiv.is(":visible")) {
+        return false;
+      }
       $tpDiv.show(); // Show picker.
-      $tpDiv.mouseover(function() { // Have to use mouseover instead of mousedown because of Opera
-        tpOver = true;
-      }).mouseout(function() {
-        tpOver = false;
-      });
       $("li", $tpDiv).removeClass("selected");
 
       // Try to find a time in the list that matches the entered time.
-      var time = this.value ? timeStringToDate(this.value, settings) : startTime;
+      var time = elm.value ? timeStringToDate(elm.value, settings) : startTime;
       var startMin = startTime.getHours() * 60 + startTime.getMinutes();
       var min = (time.getHours() * 60 + time.getMinutes()) - startMin;
       var steps = Math.round(min / settings.step);
@@ -91,22 +98,26 @@
         // Scroll to matched time.
         $tpDiv[0].scrollTop = $matchedTime[0].offsetTop;
       }
+      return true;
     };
 
-    $(elm).unbind().focus(showPicker).click(showPicker)
+    $(elm).focus(showPicker).click(showPicker)
     // Hide timepicker on blur
     .blur(function() {
-      if (!tpOver && $tpDiv[0].parentNode) { // Don't remove when timePicker is clicked or when already removed
+      if (!tpOver) {
         $tpDiv.hide();
       }
     })
-
     // Key support
     .keydown(function(e) {
       var $selected;
+      keyDown = true;
       var top = $tpDiv[0].scrollTop;
       switch (e.keyCode) {
         case 38: // Up arrow.
+          if (showPicker()) {
+            return false;
+          };
           $selected = $("li.selected", $tpList);
           var prev = $selected.prev().addClass("selected")[0];
           if (prev) {
@@ -123,6 +134,9 @@
           return false;
           break;
         case 40: // Down arrow.
+          if (showPicker()) {
+            return false;
+          };
           $selected = $("li.selected", $tpList);
           var next = $selected.length ? $selected.next().addClass("selected")[0] : $("li:first", $tpList).addClass("selected")[0];
           if (next) {
@@ -139,7 +153,7 @@
           return false;
           break;
         case 13: // Enter
-          if (!$tpDiv.is(":hidden")) {
+          if ($tpDiv.is(":visible")) {
             var sel = $("li.selected", $tpList)[0];
             setTimeVal(elm, sel, $tpDiv, settings);
           }
@@ -150,8 +164,10 @@
           return false;
           break;
       }
+    })
+    .keyup(function(e) {
+      keyDown = false;
     });
-
     // Helper function to get an inputs current time as Date object.
     // Returns a Date object.
     this.getTime = function() {
