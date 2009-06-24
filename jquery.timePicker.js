@@ -143,7 +143,7 @@
             return false;
           };
           $selected = $("li.selected", $tpList);
-          var next = $selected.length ? $selected.next().addClass("selected")[0] : $("li:first", $tpList).addClass("selected")[0];
+          var next = $selected.next().addClass("selected")[0];
           if (next) {
             $selected.removeClass("selected");
             if (next.offsetTop + next.offsetHeight > top + $tpDiv[0].offsetHeight) {
