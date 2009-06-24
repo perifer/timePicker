@@ -1,14 +1,12 @@
 /*
- * Copyright (c) 2006 Sam Collett (http://www.texotela.co.uk)
- * Licensed under the MIT License:
- * http://www.opensource.org/licenses/mit-license.php
- */
-
-/*
  * A time picker for jQuery
- * Based on original timePicker by Sam Collet (http://www.texotela.co.uk)
+ * Based on original timePicker by Sam Collet (http://www.texotela.co.uk) -
+ * copyright (c) 2006 Sam Collett (http://www.texotela.co.uk)
+ *
+ * Dual licensed under the MIT and GPL licenses.
+ * Copyright (c) 2009 Anders Fajerson
  * @name     timePicker
- * @version  0.1
+ * @version  0.2
  * @author   Anders Fajerson (http://perifer.se)
  * @example  $("#mytime").timePicker();
  * @example  $("#mytime").timePicker({step:30, startTime:"15:00", endTime:"18:00"});
@@ -33,8 +31,8 @@
 
     var tpOver = false;
     var keyDown = false;
-    var startTime = normaliseTime(settings.startTime);
-    var endTime = normaliseTime(settings.endTime);
+    var startTime = timeToDate(settings.startTime, settings);
+    var endTime = timeToDate(settings.endTime, settings);
 
     $(elm).attr('autocomplete', 'OFF'); // Disable browser autocomplete
 
@@ -56,7 +54,7 @@
     // Append the timPicker to the body and position it.
     var elmOffset = $(elm).offset();
     $tpDiv.appendTo('body').css({'top':elmOffset.top, 'left':elmOffset.left}).hide();
-    
+
     // Store the mouse state, used by the blur event. Use mouseover instead of
     // mousedown since Opera fires blur before mousedown.
     $tpDiv.mouseover(function() {
@@ -64,7 +62,7 @@
     }).mouseout(function() {
       tpOver = false;
     });
-    
+
     $("li", $tpList).mouseover(function() {
       if (!keyDown) {
         $("li.selected", $tpDiv).removeClass("selected");
@@ -81,15 +79,18 @@
       if ($tpDiv.is(":visible")) {
         return false;
       }
-      $tpDiv.show(); // Show picker.
       $("li", $tpDiv).removeClass("selected");
+
+      // Show picker. This has to be done before scrollTop is set since that
+      // can't be done on hidden elements.
+      $tpDiv.show();
 
       // Try to find a time in the list that matches the entered time.
       var time = elm.value ? timeStringToDate(elm.value, settings) : startTime;
       var startMin = startTime.getHours() * 60 + startTime.getMinutes();
       var min = (time.getHours() * 60 + time.getMinutes()) - startMin;
       var steps = Math.round(min / settings.step);
-      var roundTime = normaliseTime(new Date(2001, 0, 0, 0, (steps * settings.step + (startMin)), 0));
+      var roundTime = normaliseTime(new Date(0, 0, 0, 0, (steps * settings.step + startMin), 0));
       roundTime = (startTime < roundTime && roundTime <= endTime) ? roundTime : startTime;
       var $matchedTime = $("li:contains(" + formatTime(roundTime, settings) + ")", $tpDiv);
 
@@ -100,21 +101,23 @@
       }
       return true;
     };
-
-    $(elm).focus(showPicker).click(showPicker)
+    // Attach to click as well as focus so timePicker can be shown again when
+    // clicking on the input when it already has focus.
+    $(elm).focus(showPicker).click(showPicker);
     // Hide timepicker on blur
-    .blur(function() {
+    $(elm).blur(function() {
       if (!tpOver) {
         $tpDiv.hide();
       }
-    })
+    });
     // Key support
-    .keydown(function(e) {
+    $(elm).keydown(function(e) {
       var $selected;
       keyDown = true;
       var top = $tpDiv[0].scrollTop;
       switch (e.keyCode) {
         case 38: // Up arrow.
+          // Just show picker if it's hidden.
           if (showPicker()) {
             return false;
           };
@@ -122,18 +125,20 @@
           var prev = $selected.prev().addClass("selected")[0];
           if (prev) {
             $selected.removeClass("selected");
+            // Scroll item into view.
             if (prev.offsetTop < top) {
               $tpDiv[0].scrollTop = top - prev.offsetHeight;
             }
           }
           else {
+            // Loop to next item.
             $selected.removeClass("selected");
             prev = $("li:last", $tpList).addClass("selected")[0];
             $tpDiv[0].scrollTop = prev.offsetTop - prev.offsetHeight;
           }
           return false;
           break;
-        case 40: // Down arrow.
+        case 40: // Down arrow, similar in behaviour to up arrow.
           if (showPicker()) {
             return false;
           };
@@ -164,8 +169,9 @@
           return false;
           break;
       }
-    })
-    .keyup(function(e) {
+      return true;
+    });
+    $(elm).keyup(function(e) {
       keyDown = false;
     });
     // Helper function to get an inputs current time as Date object.
@@ -216,6 +222,10 @@
 
   function formatNumber(value) {
     return (value < 10 ? '0' : '') + value;
+  }
+
+  function timeToDate(input, settings) {
+    return (typeof input == 'object') ? normaliseTime(input) : timeStringToDate(input, settings);
   }
 
   function timeStringToDate(input, settings) {
