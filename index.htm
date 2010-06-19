@@ -27,14 +27,19 @@
   }
   </style>
   
-  <script type="text/javascript" src="../jquery-1.2.1.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
   <script type="text/javascript" src="jquery.timePicker.js"></script>
   <script type="text/javascript">
   jQuery(function() {
     // Default.
     $("#time1").timePicker();
     // 02.00 AM - 03.30 PM, 15 minutes steps.
-    $("#time2").timePicker({startTime:new Date(0, 0, 0, 2, 0, 0), endTime:new Date(0, 0, 0, 15, 30, 0), show24Hours:false, separator:'.', step: 15});
+    $("#time2").timePicker({
+  startTime: "02.00",  // Using string. Can take string or Date object.
+  endTime: new Date(0, 0, 0, 15, 30, 0),  // Using Date object.
+  show24Hours: false,
+  separator:'.',
+  step: 15});
     
     // An example how the two helper functions can be used to achieve 
     // advanced functionality.
@@ -79,13 +84,13 @@
 <pre><code>// Default.
 $("#time1").timePicker();</code></pre>
 
-<p><input type="text" id="time2" size="10" /></p>
+<p><input type="text" id="time2" size="10" value="12.00 PM"/></p>
 <pre><code>// 02.00 AM - 03.30 PM, 15 minutes steps.
 $("#time2").timePicker({
-  startTime:new Date(0, 0, 0, 2, 0, 0),
-  endTime:new Date(0, 0, 0, 15, 30, 0),
-  show24Hours:false,
-  separator:'.',
+  startTime: "02.00", // Using string. Can take string or Date object.
+  endTime: new Date(0, 0, 0, 15, 30, 0), // Using Date object here.
+  show24Hours: false,
+  separator: '.',
   step: 15});</code></pre>
 
 <div>
@@ -122,7 +127,6 @@ $("#time4").change(function() {
   else {
     $(this).removeClass("error");
   }
-});
 });</code></pre>
 
 </body>
