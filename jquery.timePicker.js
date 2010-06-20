@@ -240,7 +240,7 @@
 
       // Convert AM/PM hour to 24-hour format.
       if (!settings.show24Hours) {
-        if (hours === 12 && input.substr('AM') !== -1) {
+        if (hours === 12 && input.indexOf('AM') !== -1) {
           hours = 0;
         }
         else if (hours !== 12 && input.indexOf('PM') !== -1) {
