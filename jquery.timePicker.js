@@ -40,6 +40,8 @@
     var keyDown = false;
     var startTime = timeToDate(settings.startTime, settings);
     var endTime = timeToDate(settings.endTime, settings);
+    var selectedClass = "selected";
+    var selectedSelector = "li." + selectedClass;
 
     $(elm).attr('autocomplete', 'OFF'); // Disable browser autocomplete
 
@@ -71,8 +73,8 @@
 
     $("li", $tpList).mouseover(function() {
       if (!keyDown) {
-        $("li.selected", $tpDiv).removeClass("selected");
-        $(this).addClass("selected");
+        $(selectedSelector, $tpDiv).removeClass(selectedClass);
+        $(this).addClass(selectedClass);
       }
     }).mousedown(function() {
        tpOver = true;
@@ -85,7 +87,7 @@
       if ($tpDiv.is(":visible")) {
         return false;
       }
-      $("li", $tpDiv).removeClass("selected");
+      $("li", $tpDiv).removeClass(selectedClass);
 
       // Position
       var elmOffset = $(elm).offset();
@@ -105,7 +107,7 @@
       var $matchedTime = $("li:contains(" + formatTime(roundTime, settings) + ")", $tpDiv);
 
       if ($matchedTime.length) {
-        $matchedTime.addClass("selected");
+        $matchedTime.addClass(selectedClass);
         // Scroll to matched time.
         $tpDiv[0].scrollTop = $matchedTime[0].offsetTop;
       }
@@ -135,10 +137,10 @@
           if (showPicker()) {
             return false;
           };
-          $selected = $("li.selected", $tpList);
-          var prev = $selected.prev().addClass("selected")[0];
+          $selected = $(selectedSelector, $tpList);
+          var prev = $selected.prev().addClass(selectedClass)[0];
           if (prev) {
-            $selected.removeClass("selected");
+            $selected.removeClass(selectedClass);
             // Scroll item into view.
             if (prev.offsetTop < top) {
               $tpDiv[0].scrollTop = top - prev.offsetHeight;
@@ -146,8 +148,8 @@
           }
           else {
             // Loop to next item.
-            $selected.removeClass("selected");
-            prev = $("li:last", $tpList).addClass("selected")[0];
+            $selected.removeClass(selectedClass);
+            prev = $("li:last", $tpList).addClass(selectedClass)[0];
             $tpDiv[0].scrollTop = prev.offsetTop - prev.offsetHeight;
           }
           return false;
@@ -156,24 +158,24 @@
           if (showPicker()) {
             return false;
           };
-          $selected = $("li.selected", $tpList);
-          var next = $selected.next().addClass("selected")[0];
+          $selected = $(selectedSelector, $tpList);
+          var next = $selected.next().addClass(selectedClass)[0];
           if (next) {
-            $selected.removeClass("selected");
+            $selected.removeClass(selectedClass);
             if (next.offsetTop + next.offsetHeight > top + $tpDiv[0].offsetHeight) {
               $tpDiv[0].scrollTop = top + next.offsetHeight;
             }
           }
           else {
-            $selected.removeClass("selected");
-            next = $("li:first", $tpList).addClass("selected")[0];
+            $selected.removeClass(selectedClass);
+            next = $("li:first", $tpList).addClass(selectedClass)[0];
             $tpDiv[0].scrollTop = 0;
           }
           return false;
           break;
         case 13: // Enter
           if ($tpDiv.is(":visible")) {
-            var sel = $("li.selected", $tpList)[0];
+            var sel = $(selectedSelector, $tpList)[0];
             setTimeVal(elm, sel, $tpDiv, settings);
           }
           return false;
