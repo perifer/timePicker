@@ -17,6 +17,7 @@
  *   endTime: end of the range of acceptable times
  *   separator: separator string to use between hours and minutes (e.g. ':')
  *   show24Hours: use a 24-hour scheme
+ *   selectedTime: time with which to pre-fill the field
  */
 
 (function($){
@@ -40,8 +41,12 @@
     var keyDown = false;
     var startTime = timeToDate(settings.startTime, settings);
     var endTime = timeToDate(settings.endTime, settings);
+    var selectedTime = timeToDate(settings.selectedTime, settings);
 
     $(elm).attr('autocomplete', 'OFF'); // Disable browser autocomplete
+    if (selectedTime) {
+      elm.value = formatTime(selectedTime, settings);
+    }
 
     var times = [];
     var time = new Date(startTime); // Create a new date object.
@@ -209,7 +214,8 @@
     startTime: new Date(0, 0, 0, 0, 0, 0),
     endTime: new Date(0, 0, 0, 23, 30, 0),
     separator: ':',
-    show24Hours: true
+    show24Hours: true,
+    seletedTime: null
   };
 
   // Private functions.
