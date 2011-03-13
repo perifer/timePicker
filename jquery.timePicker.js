@@ -10,6 +10,13 @@
  * @author   Anders Fajerson (http://perifer.se)
  * @example  $("#mytime").timePicker();
  * @example  $("#mytime").timePicker({step:30, startTime:"15:00", endTime:"18:00"});
+ *
+ * Options:
+ *   step: # of minutes to step the time by
+ *   startTime: beginning of the range of acceptable times
+ *   endTime: end of the range of acceptable times
+ *   separator: separator string to use between hours and minutes (e.g. ':')
+ *   show24Hours: use a 24-hour scheme
  */
 
 (function($){
