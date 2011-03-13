@@ -187,9 +187,9 @@
       return timeStringToDate(elm.value, settings);
     };
     // Helper function to set a time input.
-    // Takes a Date object.
+    // Takes a Date object or string.
     this.setTime = function(time) {
-      elm.value = formatTime(normaliseTime(time), settings);
+      elm.value = formatTime(timeToDate(time, settings), settings);
       // Trigger element's change events.
       $(elm).change();
     };
