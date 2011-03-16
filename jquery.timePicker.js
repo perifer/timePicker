@@ -2,27 +2,25 @@
  * A time picker for jQuery
  *
  * Dual licensed under the MIT and GPL licenses.
- * Copyright (c) 2009 Anders Fajerson
+ * Copyright (c) 2009-2011 Anders Fajerson
  * @name     timePicker
  * @author   Anders Fajerson (http://perifer.se)
  * @example  $("#mytime").timePicker();
- * @example  $("#mytime").timePicker({step:30, startTime:"15:00", endTime:"18:00"});
+ * @example  $("#mytime").timePicker({step:30, startTime:new Date(0, 0, 0, 15, 00, 0), endTime:"18:00", timeFormat:"hh:mm tt"});
  *
- * Based on timePicker by Sam Collet (http://www.texotela.co.uk/code/jquery/timepicker/)
+ * Based on timePicker by Sam Collet (http://www.texotela.co.uk)
  *
- * Options:
- *   step: # of minutes to step the time by
- *   startTime: beginning of the range of acceptable times
- *   endTime: end of the range of acceptable times
- *   separator: separator string to use between hours and minutes (e.g. ':')
- *   show24Hours: use a 24-hour scheme
  */
 
 (function($){
   $.fn.timePicker = function(options) {
-    // Build main options before element iteration
-    var settings = $.extend({}, $.fn.timePicker.defaults, options);
+    // Handle deprecated options.
+    if (options !== undefined && (options.separator !== undefined || options.show24Hours !== undefined) && !options.timeFormat) {
+      var show24Hours = (options.show24Hours === undefined || options.show24Hours);
+      options.timeFormat = (show24Hours ? 'HH': 'hh') + (options.separator !== undefined ? options.separator : ':') + 'mm' + (show24Hours ? '': ' tt');
+    };
 
+    var settings = $.extend({}, $.fn.timePicker.defaults, options);
     return this.each(function() {
       $.timePicker(this, settings);
     });
@@ -98,20 +96,31 @@
       // can't be done on hidden elements.
       $tpDiv.show();
 
-      // Try to find a time in the list that matches the entered time.
-      var time = elm.value ? timeStringToDate(elm.value, settings) : startTime;
-      var startMin = startTime.getHours() * 60 + startTime.getMinutes();
-      var min = (time.getHours() * 60 + time.getMinutes()) - startMin;
-      var steps = Math.round(min / settings.step);
-      var roundTime = normaliseTime(new Date(0, 0, 0, 0, (steps * settings.step + startMin), 0));
-      roundTime = (startTime < roundTime && roundTime <= endTime) ? roundTime : startTime;
-      var $matchedTime = $("li:contains(" + formatTime(roundTime, settings) + ")", $tpDiv);
+      // Select startTime as default.
+      var time = startTime;
+      if (elm.value) {
+        try {
+          // Try to find a time in the list that matches the entered time.
+          time = parseTime(elm.value, settings);
+          var startMin = startTime.getHours() * 60 + startTime.getMinutes();
+          var min = (time.getHours() * 60 + time.getMinutes()) - startMin;
+          var steps = Math.round(min / settings.step);
+          var roundTime = new Date(2001, 0, 0, 0, (steps * settings.step + startMin), 0);
+          time = (startTime < roundTime && roundTime <= endTime) ? roundTime : startTime;
+
+        }
+        catch(e) {
+          // Ignore parse errors.
+        }
+      };
+      var $matchedTime = $("li:contains(" + formatTime(time, settings) + ")", $tpDiv);
 
       if ($matchedTime.length) {
         $matchedTime.addClass(selectedClass);
         // Scroll to matched time.
         $tpDiv[0].scrollTop = $matchedTime[0].offsetTop;
       }
+
       return true;
     };
     // Attach to click as well as focus so timePicker can be shown again when
@@ -207,12 +216,14 @@
   }; // End fn;
 
   // Plugin defaults.
+
   $.fn.timePicker.defaults = {
     step:30,
     startTime: new Date(0, 0, 0, 0, 0, 0),
     endTime: new Date(0, 0, 0, 23, 30, 0),
-    separator: ':',
-    show24Hours: true
+    timeFormat: 'HH:mm',
+    amDesignator: 'AM',
+    pmDesignator: 'PM'
   };
 
   // Private functions.
@@ -230,12 +241,9 @@
     $tpDiv.hide();
   }
 
-  function formatTime(time, settings) {
-    var h = time.getHours();
-    var hours = settings.show24Hours ? h : (((h + 11) % 12) + 1);
-    var minutes = time.getMinutes();
-    return formatNumber(hours) + settings.separator + formatNumber(minutes) + (settings.show24Hours ? '' : ((h < 12) ? ' AM' : ' PM'));
-  }
+  function formatTime(date, settings) {
+    if (date) return parseFormat(settings, date);
+  };
 
   function formatNumber(value) {
     return (value < 10 ? '0' : '') + value;
@@ -245,25 +253,57 @@
     return (typeof input == 'object') ? normaliseTime(input) : timeStringToDate(input, settings);
   }
 
-  function timeStringToDate(input, settings) {
-    if (input) {
-      var array = input.split(settings.separator);
-      var hours = parseFloat(array[0]);
-      var minutes = parseFloat(array[1]);
-
-      // Convert AM/PM hour to 24-hour format.
-      if (!settings.show24Hours) {
-        if (hours === 12 && input.indexOf('AM') !== -1) {
-          hours = 0;
+  function timeStringToDate(string, settings) {
+    var formatParts = settings.timeFormat.match(/(hh?|HH?|mm?|ss?|tt?)/g);
+    var regexPattern = parseFormat(settings, false);
+    var re = new RegExp('^' + regexPattern + '$');
+    var stringParts = string.match(re);
+    var ampm;
+    var hours = -1;
+    var minutes = -1;
+    var seconds = 0;
+    var am = settings.amDesignator;
+    var pm = settings.pmDesignator;
+    for (var i=0; i < formatParts.length; i++) {
+      if (stringParts && stringParts[i+1]) {
+        switch (formatParts[i]) {
+        case "hh":
+        case "h":
+          hours = parseInt(stringParts[i+1], 10);
+          break;
+        case "HH":
+        case "H":
+          hours   = parseInt(stringParts[i+1], 10);
+          break;
+        case "mm":
+        case "m":
+          minutes = parseInt(stringParts[i+1], 10);
+          break;
+        case "ss":
+        case "s":
+          seconds = parseInt(stringParts[i+1], 10);
+          break;
+        case "t":
+          am = am.substring(0, 1);
+          pm = pm.substring(0, 1);
+          // break intentionally left out.
+        case "tt":
+          ampm = stringParts[i+1];
+          break;
         }
-        else if (hours !== 12 && input.indexOf('PM') !== -1) {
-          hours += 12;
-        }
-      }
-      var time = new Date(0, 0, 0, hours, minutes, 0);
-      return normaliseTime(time);
+      };
+    };
+    if (hours === 12 && ampm === am) {
+      hours = 0;
     }
-    return null;
+    else if (hours !== 12 && ampm === pm) {
+      hours += 12;
+    }
+
+    date = new Date(2001,0,0,hours,minutes,seconds);
+    if (date.getHours() != hours || date.getMinutes() != minutes || date.getSeconds() != seconds)
+      throw 'Invalid time';
+    return date;
   }
 
   /* Normalise time object to a common date. */
@@ -272,6 +312,39 @@
     time.setMonth(0);
     time.setDate(0);
     return time;
+  }
+
+  function parseFormat(settings, date) {
+    var p = function p(s) {
+         return (s < 10) ? "0" + s : s;
+    };
+    return settings.timeFormat.replace(/hh?|HH?|mm?|ss?|tt?/g, function(format) {
+      var am = settings.amDesignator;
+      var pm = settings.pmDesignator;
+      switch (format) {
+        case "hh":
+          return date ? p(((date.getHours() + 11) % 12) + 1) : '([0-1][0-9])';
+        case "h":
+          return date ? ((date.getHours() + 11) % 12) + 1 : '([0-1]?[0-9])';
+        case "HH":
+          return date ? p(date.getHours()) : '([0-2][0-9])';
+        case "H":
+          return date ? date.getHours() : '([0-2]?[0-9])';
+        case "mm":
+          return date ? p(date.getMinutes()) : '([0-6][0-9])';
+        case "m":
+          return date ? date.getMinutes() : '([0-6]?[0-9])';
+        case "ss":
+          return date ? p(date.getSeconds()) : '([0-6][0-9])';
+        case "s":
+          return date ? date.getSeconds() : '([0-6]?[0-9])';
+        case "t":
+          return date ? date.getHours() < 12 ? am.substring(0, 1) : pm.substring(0, 1) : '(' + am.substring(0, 1) + '|' + pm.substring(0, 1) + ')';
+        case "tt":
+          return date ? date.getHours() < 12 ? am : pm : '(' + am + '|' + pm + ')';
+      }
+      return '';
+    });
   }
 
 })(jQuery);

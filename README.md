@@ -12,11 +12,11 @@ Default:
 02.00 AM - 03.30 PM, 15 minutes steps:
 
     $("#time2").timePicker({
-      startTime: "02.00", // Using string. Can take string or Date object.
+      startTime: "02.00 AM", // Using string. Can take string or Date object.
       endTime: new Date(0, 0, 0, 15, 30, 0), // Using Date object here.
-      show24Hours: false,
-      separator: '.',
-      step: 15});
+      timeFormat: 'hh.mm tt',
+      step: 15
+    });
       
 An example how the two helper functions can be used to achieve
 advanced functionality.

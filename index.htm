@@ -32,11 +32,11 @@
     $("#time1").timePicker();
     // 02.00 AM - 03.30 PM, 15 minutes steps.
     $("#time2").timePicker({
-  startTime: "02.00",  // Using string. Can take string or Date object.
-  endTime: new Date(0, 0, 0, 15, 30, 0),  // Using Date object.
-  show24Hours: false,
-  separator:'.',
-  step: 15});
+      startTime: "02.00 AM",  // Using string. Can take string or Date object.
+      endTime: new Date(0, 0, 0, 15, 30, 0),  // Using Date object.
+      timeFormat: 'hh.mm tt',
+      step: 15
+    });
     
     // An example how the two helper functions can be used to achieve 
     // advanced functionality.
@@ -84,17 +84,17 @@
 <pre><code>// Default.
 $("#time1").timePicker();</code></pre>
 
-<div><input type="text" id="time2" size="10" value="12.00 PM"/></div>
+<div><input type="text" id="time2" size="10" value="11.00 AM"/></div>
 <pre><code>// 02.00 AM - 03.30 PM, 15 minutes steps.
 $("#time2").timePicker({
-  startTime: "02.00", // Using string. Can take string or Date object.
+  startTime: "02.00 AM", // Using string. Can take string or Date object.
   endTime: new Date(0, 0, 0, 15, 30, 0), // Using Date object here.
-  show24Hours: false,
-  separator: '.',
-  step: 15});</code></pre>
+  timeFormat: 'hh.mm tt',
+  step: 15
+});</code></pre>
 
 <div><input type="text" id="time3" size="10" value="08:00" /> <input type="text" id="time4" size="10" value="09:00" /></div>
-<pre><code>// An example how the two helper functions can be used to achieve 
+<pre><code>// An example how the two helper functions $.timePicker(element).setTime() and $.timePicker(element).getTime() can be used to achieve 
 // advanced functionality.
 // - Linking: When changing the first input the second input is updated and the
 //   duration is kept.
