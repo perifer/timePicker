@@ -33,6 +33,14 @@
 
   $.timePicker.version = '0.3';
 
+  // Public funtions.
+  $.timePicker.formatTime = function(format, date, settings) {
+    settings = settings || $.fn.timePicker.defaults;
+    settings.timeFormat = format;
+    return formatTime(date, settings);
+  };
+
+
   $._timePicker = function(elm, settings) {
 
     var tpOver = false;
