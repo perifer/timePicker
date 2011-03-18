@@ -1,15 +1,14 @@
 /*
  * A time picker for jQuery
- * Based on original timePicker by Sam Collet (http://www.texotela.co.uk) -
- * copyright (c) 2006 Sam Collett (http://www.texotela.co.uk)
  *
  * Dual licensed under the MIT and GPL licenses.
  * Copyright (c) 2009 Anders Fajerson
  * @name     timePicker
- * @version  0.2
  * @author   Anders Fajerson (http://perifer.se)
  * @example  $("#mytime").timePicker();
  * @example  $("#mytime").timePicker({step:30, startTime:"15:00", endTime:"18:00"});
+ *
+ * Based on timePicker by Sam Collet (http://www.texotela.co.uk/code/jquery/timepicker/)
  *
  * Options:
  *   step: # of minutes to step the time by
@@ -33,6 +32,8 @@
     var e = $(elm)[0];
     return e.timePicker || (e.timePicker = new jQuery._timePicker(e, settings));
   };
+
+  $.timePicker.version = '0.3';
 
   $._timePicker = function(elm, settings) {
 
