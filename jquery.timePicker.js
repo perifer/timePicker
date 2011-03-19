@@ -39,14 +39,18 @@
     settings.timeFormat = format;
     return formatTime(date, settings);
   };
-
+  $.timePicker.parseTime = function(format, input, settings) {
+    settings = settings || $.fn.timePicker.defaults;
+    settings.timeFormat = format;
+    return parseTime(input, settings);
+  };
 
   $._timePicker = function(elm, settings) {
 
     var tpOver = false;
     var keyDown = false;
-    var startTime = timeToDate(settings.startTime, settings);
-    var endTime = timeToDate(settings.endTime, settings);
+    var startTime = parseTime(settings.startTime, settings);
+    var endTime = parseTime(settings.endTime, settings);
     var selectedClass = "selected";
     var selectedSelector = "li." + selectedClass;
 
@@ -216,7 +220,7 @@
     // Helper function to set a time input.
     // Takes a Date object or string.
     this.setTime = function(time) {
-      elm.value = formatTime(timeToDate(time, settings), settings);
+      elm.value = formatTime(parseTime(time, settings), settings);
       // Trigger element's change events.
       $(elm).change();
     };
@@ -257,7 +261,7 @@
     return (value < 10 ? '0' : '') + value;
   }
 
-  function timeToDate(input, settings) {
+  function parseTime(input, settings) {
     return (typeof input == 'object') ? normaliseTime(input) : timeStringToDate(input, settings);
   }
 
