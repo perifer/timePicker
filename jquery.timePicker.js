@@ -31,7 +31,7 @@
     return e.timePicker || (e.timePicker = new jQuery._timePicker(e, settings));
   };
 
-  $.timePicker.version = '0.3';
+  $.timePicker.version = '0.4';
 
   // Public funtions.
   $.timePicker.formatTime = function(format, date, settings) {
@@ -126,7 +126,6 @@
         }
       };
       var $matchedTime = $("li:contains(" + formatTime(time, settings) + ")", $tpDiv);
-
       if ($matchedTime.length) {
         $matchedTime.addClass(selectedClass);
         // Scroll to matched time.
@@ -215,7 +214,7 @@
     // Helper function to get an inputs current time as Date object.
     // Returns a Date object.
     this.getTime = function() {
-      return timeStringToDate(elm.value, settings);
+      return parseTime(elm.value, settings);
     };
     // Helper function to set a time input.
     // Takes a Date object or string.
@@ -261,11 +260,11 @@
     return (value < 10 ? '0' : '') + value;
   }
 
-  function parseTime(input, settings) {
-    return (typeof input == 'object') ? normaliseTime(input) : timeStringToDate(input, settings);
-  }
+  function parseTime(string, settings) {
+    if (typeof string == 'object') {
+      return normalizeTime(string);
+    }
 
-  function timeStringToDate(string, settings) {
     var formatParts = settings.timeFormat.match(/(hh?|HH?|mm?|ss?|tt?)/g);
     var regexPattern = parseFormat(settings, false);
     var re = new RegExp('^' + regexPattern + '$');
@@ -276,6 +275,7 @@
     var seconds = 0;
     var am = settings.amDesignator;
     var pm = settings.pmDesignator;
+    var date;
     for (var i=0; i < formatParts.length; i++) {
       if (stringParts && stringParts[i+1]) {
         switch (formatParts[i]) {
@@ -316,14 +316,14 @@
     if (date.getHours() != hours || date.getMinutes() != minutes || date.getSeconds() != seconds)
       throw 'Invalid time';
     return date;
-  }
+ }
 
-  /* Normalise time object to a common date. */
-  function normaliseTime(time) {
-    time.setFullYear(2001);
-    time.setMonth(0);
-    time.setDate(0);
-    return time;
+  /* Normalise date object to a common year, month and day. */
+  function normalizeTime(date) {
+    date.setFullYear(2001);
+    date.setMonth(0);
+    date.setDate(0);
+    return date;
   }
 
   function parseFormat(settings, date) {
