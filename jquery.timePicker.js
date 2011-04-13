@@ -227,6 +227,7 @@
       elm.focus();
     }
     // Hide picker
+    settings.onBeforeHide() || $.noop();
     $tpDiv.hide();
   }
 
