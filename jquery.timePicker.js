@@ -88,6 +88,7 @@
       if ($tpDiv.is(":visible")) {
         return false;
       }
+      settings.onBeforeShow() || $.noop();
       $("li", $tpDiv).removeClass(selectedClass);
 
       // Position
