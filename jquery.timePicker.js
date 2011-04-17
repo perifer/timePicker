@@ -121,7 +121,7 @@
     // Hide timepicker on blur
     $(elm).blur(function() {
       if (!tpOver) {
-        $tpDiv.hide();
+          $.timePicker(this).hidePicker();
       }
     });
     // Keypress doesn't repeat on Safari for non-text keys.
@@ -183,7 +183,7 @@
           return false;
           break;
         case 27: // Esc
-          $tpDiv.hide();
+          hidePicker();
           return false;
           break;
       }
@@ -204,6 +204,12 @@
       // Trigger element's change events.
       $(elm).change();
     };
+    
+    this.hidePicker = function() {
+        // Hide picker
+        settings.onBeforeHide() || $.noop();
+        $tpDiv.hide();
+    }
 
   }; // End fn;
 
@@ -227,9 +233,7 @@
     if (!$.browser.msie) {
       elm.focus();
     }
-    // Hide picker
-    settings.onBeforeHide() || $.noop();
-    $tpDiv.hide();
+    $.timePicker(elm).hidePicker();
   }
 
   function formatTime(time, settings) {
