@@ -88,6 +88,17 @@
       if ($tpDiv.is(":visible")) {
         return false;
       }
+    
+      var clickOutListener=function(e) {
+        var contains=false;
+        $(e.target).parents().each(function() { contains|=(this===$tpDiv.first().get()); return contains; });
+        if (!contains) {
+          $tpDiv.hide();
+          $(document).undelegate("*", "click", clickOutListener);
+        }
+      };
+      $(document).delegate("*", "click", clickOutListener);
+
       $("li", $tpDiv).removeClass(selectedClass);
 
       // Position
