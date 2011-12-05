@@ -18,6 +18,15 @@
  *   show24Hours: use a 24-hour scheme
  */
 
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}
 (function($){
   $.fn.timePicker = function(options) {
     // Build main options before element iteration
@@ -274,4 +283,4 @@
     return time;
   }
 
-})(jQuery);
+}));
