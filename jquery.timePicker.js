@@ -30,7 +30,7 @@
 
   $.timePicker = function (elm, settings) {
     var e = $(elm)[0];
-    return e.timePicker || (e.timePicker = new jQuery._timePicker(e, settings));
+    return e.timePicker || (e.timePicker = new $._timePicker(e, settings));
   };
 
   $.timePicker.version = '0.3';
