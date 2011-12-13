@@ -221,7 +221,8 @@
     startTime: new Date(0, 0, 0, 0, 0, 0),
     endTime: new Date(0, 0, 0, 23, 30, 0),
     separator: ':',
-    show24Hours: true
+    show24Hours: true,
+    leadingZero: true
   };
 
   // Private functions.
@@ -243,7 +244,8 @@
     var h = time.getHours();
     var hours = settings.show24Hours ? h : (((h + 11) % 12) + 1);
     var minutes = time.getMinutes();
-    return formatNumber(hours) + settings.separator + formatNumber(minutes) + (settings.show24Hours ? '' : ((h < 12) ? ' AM' : ' PM'));
+    var hours_str = settings.leadingZero ?  formatNumber(hours) : hours;
+    return hours_str + settings.separator + formatNumber(minutes) + (settings.show24Hours ? '' : ((h < 12) ? ' AM' : ' PM'));
   }
 
   function formatNumber(value) {
