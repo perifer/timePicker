@@ -35,6 +35,20 @@
 
   $.timePicker.version = '0.3';
 
+  // Static public functions
+
+  // Date object to time string
+  $.timePicker.formatTime = function(val, settings) {
+    settings = $.extend({}, $.fn.timePicker.defaults, settings);
+    return formatTime(timeToDate(val, settings), settings);
+  };
+
+  // Time string to Date object
+  $.timePicker.timeStringToDate = function(str, settings) {
+    settings = $.extend({}, $.fn.timePicker.defaults, settings);
+    return timeStringToDate(str, settings);
+  };
+
   $._timePicker = function(elm, settings) {
 
     var tpOver = false;
