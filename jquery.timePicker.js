@@ -268,9 +268,10 @@
 
   /* Normalise time object to a common date. */
   function normaliseTime(time) {
-    time.setFullYear(2001);
-    time.setMonth(0);
-    time.setDate(0);
+    var currentDate = new Date();
+    time.setFullYear(currentDate.getFullYear());
+    time.setMonth(currentDate.getMonth());
+    time.setDate(currentDate.getDate());
     return time;
   }
 
