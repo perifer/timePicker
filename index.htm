@@ -71,6 +71,10 @@
         $(this).removeClass("error");
       }
     });
+
+    // Destroy test
+    $("#time5").timePicker();
+    $("#time5").timePicker('destroy');
     
   });
   </script>
@@ -132,6 +136,11 @@ $("#time4").change(function() {
     $(this).removeClass("error");
   }
 });</code></pre>
+
+<div><input type="text" id="time5" size="10" /></div>
+<pre><code>// Destroy test
+$("#time5").timePicker();
+$("#time5").timePicker('destroy');</code></pre>
 
 </body>
 </html>

@@ -19,13 +19,34 @@
  */
 
 (function($){
-  $.fn.timePicker = function(options) {
-    // Build main options before element iteration
-    var settings = $.extend({}, $.fn.timePicker.defaults, options);
 
-    return this.each(function() {
-      $.timePicker(this, settings);
-    });
+  var methods = {
+    init : function(options) {
+      // Build main options before element iteration
+      var settings = $.extend({}, $.fn.timePicker.defaults, options);
+
+      return this.each(function() {
+        $.timePicker(this, settings);
+      });
+    },
+    destroy : function() {
+      return this.each(function(){
+        if (this.timePicker) {
+          delete this.timePicker;
+          $('div.time-picker').remove();
+        }
+      });
+    }
+  };
+
+  $.fn.timePicker = function(method) {
+    if ( methods[method] ) {
+      return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
+    } else if ( typeof method === 'object' || ! method ) {
+      return methods.init.apply( this, arguments );
+    } else {
+      $.error( 'Method ' +  method + ' does not exist on jQuery.tooltip' );
+    }
   };
 
   $.timePicker = function (elm, settings) {
@@ -33,7 +54,7 @@
     return e.timePicker || (e.timePicker = new jQuery._timePicker(e, settings));
   };
 
-  $.timePicker.version = '0.3';
+  $.timePicker.version = '0.4';
 
   $._timePicker = function(elm, settings) {
 
