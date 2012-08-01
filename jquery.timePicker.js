@@ -178,8 +178,8 @@
           if ($tpDiv.is(":visible")) {
             var sel = $(selectedSelector, $tpList)[0];
             setTimeVal(elm, sel, $tpDiv, settings);
+            return false;
           }
-          return false;
           break;
         case 27: // Esc
           $tpDiv.hide();
