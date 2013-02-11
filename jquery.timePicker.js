@@ -234,7 +234,7 @@
     var h = time.getHours();
     var hours = settings.show24Hours ? h : (((h + 11) % 12) + 1);
     var minutes = time.getMinutes();
-    return formatNumber(hours) + settings.separator + formatNumber(minutes) + (settings.show24Hours ? '' : ((h < 12) ? ' AM' : ' PM'));
+    return (settings.show24Hours ? formatNumber(hours) : hours) + settings.separator + formatNumber(minutes) + (settings.show24Hours ? '' : ((h < 12) ? ' AM' : ' PM'));
   }
 
   function formatNumber(value) {
