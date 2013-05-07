@@ -43,6 +43,7 @@
     var endTime = timeToDate(settings.endTime, settings);
     var selectedClass = "selected";
     var selectedSelector = "li." + selectedClass;
+    var textDirty = false;
 
     $(elm).attr('autocomplete', 'OFF'); // Disable browser autocomplete
 
@@ -80,6 +81,7 @@
     }).mousedown(function() {
        tpOver = true;
     }).click(function() {
+        textDirty=false;
       setTimeVal(elm, this, $tpDiv, settings);
       tpOver = false;
     });
@@ -175,15 +177,27 @@
           return false;
           break;
         case 13: // Enter
-          if ($tpDiv.is(":visible")) {
-            var sel = $(selectedSelector, $tpList)[0];
-            setTimeVal(elm, sel, $tpDiv, settings);
+          if ($tpDiv.is(":visible")) 
+          {
+            if(textDirty)
+            {
+                $tpDiv.hide();
+                $(elm).change();//Fire the change event for the elm
+            }
+            else
+            {
+                var sel = $(selectedSelector, $tpList)[0];
+                setTimeVal(elm, sel, $tpDiv, settings);
+            }
           }
           return false;
           break;
         case 27: // Esc
           $tpDiv.hide();
           return false;
+          break;
+        default:
+             textDirty=true; //Non control key pressed this is now probably a dirty text box so enter should change behavior
           break;
       }
       return true;
