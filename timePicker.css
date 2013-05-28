@@ -5,7 +5,7 @@ div.time-picker {
   overflow: auto;
   background: #fff;
   border: 1px solid #aaa;
-  z-index: 99;
+z-index: 1051; /* for bootstrap modals */
   margin: 0;
 }
 div.time-picker-12hours {
