@@ -249,7 +249,9 @@
     if (input) {
       var array = input.split(settings.separator);
       var hours = parseFloat(array[0]);
+      if (isNan(hours)) { hours = 0; }
       var minutes = parseFloat(array[1]);
+      if (isNan(minutes)) { minutes = 0; }
 
       // Convert AM/PM hour to 24-hour format.
       if (!settings.show24Hours) {
