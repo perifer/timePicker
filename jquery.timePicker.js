@@ -18,6 +18,15 @@
  *   show24Hours: use a 24-hour scheme
  */
 
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}
 (function($){
   $.fn.timePicker = function(options) {
     // Build main options before element iteration
@@ -30,7 +39,7 @@
 
   $.timePicker = function (elm, settings) {
     var e = $(elm)[0];
-    return e.timePicker || (e.timePicker = new jQuery._timePicker(e, settings));
+    return e.timePicker || (e.timePicker = new $._timePicker(e, settings));
   };
 
   $.timePicker.version = '0.3';
@@ -212,7 +221,8 @@
     startTime: new Date(0, 0, 0, 0, 0, 0),
     endTime: new Date(0, 0, 0, 23, 30, 0),
     separator: ':',
-    show24Hours: true
+    show24Hours: true,
+    leadingZero: true
   };
 
   // Private functions.
@@ -234,7 +244,8 @@
     var h = time.getHours();
     var hours = settings.show24Hours ? h : (((h + 11) % 12) + 1);
     var minutes = time.getMinutes();
-    return formatNumber(hours) + settings.separator + formatNumber(minutes) + (settings.show24Hours ? '' : ((h < 12) ? ' AM' : ' PM'));
+    var hours_str = settings.leadingZero ?  formatNumber(hours) : hours;
+    return hours_str + settings.separator + formatNumber(minutes) + (settings.show24Hours ? '' : ((h < 12) ? ' AM' : ' PM'));
   }
 
   function formatNumber(value) {
@@ -274,4 +285,4 @@
     return time;
   }
 
-})(jQuery);
+}));
