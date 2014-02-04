@@ -14,6 +14,7 @@ Default:
     $("#time2").timePicker({
       startTime: "02.00", // Using string. Can take string or Date object.
       endTime: new Date(0, 0, 0, 15, 30, 0), // Using Date object here.
+      defaultSelected: "11.30", // defaults to startTime if not specified
       show24Hours: false,
       separator: '.',
       step: 15});
