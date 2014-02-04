@@ -88,6 +88,19 @@
       if ($tpDiv.is(":visible")) {
         return false;
       }
+    
+      var clickOutListener=function(e) {
+		var contains=false;
+        $(e.target).parents().each(function() { contains|=(this===$tpDiv.first().get()); return contains; });
+        contains|=(this===elm);
+		if (!contains) {
+			hidePicker($tpDiv);
+        }
+		
+      };
+      $tpDiv.data("clickOutListener", clickOutListener);
+	  $(document).delegate("*", "click", clickOutListener);
+
       $("li", $tpDiv).removeClass(selectedClass);
 
       // Position
@@ -120,7 +133,7 @@
     // Hide timepicker on blur
     $(elm).blur(function() {
       if (!tpOver) {
-        $tpDiv.hide();
+        hidePicker($tpDiv);
       }
     });
     // Keypress doesn't repeat on Safari for non-text keys.
@@ -182,7 +195,7 @@
           return false;
           break;
         case 27: // Esc
-          $tpDiv.hide();
+          hidePicker($tpDiv);
           return false;
           break;
       }
@@ -217,6 +230,13 @@
 
   // Private functions.
 
+  function hidePicker($tpDiv) {
+	var listener=$tpDiv.data("clickOutListener");
+	$(document).undelegate("*", "click", listener);
+	$tpDiv.removeData("clickOutListener");
+	$tpDiv.hide();
+  }
+
   function setTimeVal(elm, sel, $tpDiv, settings) {
     // Update input field
     elm.value = $(sel).text();
@@ -227,7 +247,7 @@
       elm.focus();
     }
     // Hide picker
-    $tpDiv.hide();
+    hidePicker($tpDiv);
   }
 
   function formatTime(time, settings) {
