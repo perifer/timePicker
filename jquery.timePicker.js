@@ -199,9 +199,13 @@
     // Helper function to set a time input.
     // Takes a Date object or string.
     this.setTime = function(time) {
-      elm.value = formatTime(timeToDate(time, settings), settings);
-      // Trigger element's change events.
-      $(elm).change();
+		if (time) {
+			elm.value = formatTime(timeToDate(time, settings), settings);
+		} else {
+			elm.value = '';
+		}
+		// Trigger element's change events.
+		$(elm).change();
     };
 
   }; // End fn;
