@@ -199,9 +199,13 @@
     // Helper function to set a time input.
     // Takes a Date object or string.
     this.setTime = function(time) {
-      elm.value = formatTime(timeToDate(time, settings), settings);
-      // Trigger element's change events.
-      $(elm).change();
+		if (time) {
+			elm.value = formatTime(timeToDate(time, settings), settings);
+		} else {
+			elm.value = '';
+		}
+		// Trigger element's change events.
+		$(elm).change();
     };
 
   }; // End fn;
@@ -249,7 +253,9 @@
     if (input) {
       var array = input.split(settings.separator);
       var hours = parseFloat(array[0]);
+      if (isNaN(hours)) { hours = 0; }
       var minutes = parseFloat(array[1]);
+      if (isNaN(minutes)) { minutes = 0; }
 
       // Convert AM/PM hour to 24-hour format.
       if (!settings.show24Hours) {
