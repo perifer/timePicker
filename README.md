@@ -1,3 +1,7 @@
+:triangular_flag_on_post:  **This project is not being actively maintained.**
+Consider using the [pickadate](http://amsul.ca/pickadate.js/time.htm) project instead.
+Use `classic` theme for looks similar to those of this project.
+
 timePicker
 ==========
 A time picker control for textfields built using jQuery. Inspired by Google Calendar.
